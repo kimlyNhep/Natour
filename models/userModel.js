@@ -6,26 +6,26 @@ const crypto = require('crypto');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please tell us your name'],
+    required: [true, 'Please tell us your name']
   },
   email: {
     type: String,
     required: [true, 'Please tell us your email'],
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valide email'],
+    validate: [validator.isEmail, 'Please provide a valide email']
   },
   phone: String,
   role: {
     type: String,
     enum: ['user', 'guide', 'lead-guide', 'admin'],
-    default: 'user',
+    default: 'user'
   },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
     minlength: 8,
-    select: false,
+    select: false
   },
   passwordConfirm: {
     type: String,
@@ -35,8 +35,8 @@ const userSchema = new mongoose.Schema({
       validator: function (el) {
         return el === this.password;
       },
-      message: 'Password are not the same',
-    },
+      message: 'Password are not the same'
+    }
   },
   passwordChangeAt: Date,
   passwordResetToken: String,
@@ -44,8 +44,8 @@ const userSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true,
-    select: false,
-  },
+    select: false
+  }
 });
 
 userSchema.pre('save', async function (next) {
