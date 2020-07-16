@@ -89,7 +89,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   }
 
   const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
-  // if the distance unit is miles we should divide the distance by 3963.2 if the distance unit is km
+  // if the distance unit is meter we should divide the distance by 3963.2 if the distance unit is km
   // we should divide by 6378.1 to get the radius of the earth
 
   const tours = await Tour.find({
@@ -110,6 +110,9 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
 exports.getDistances = catchAsync(async (req, res, next) => {
   const { latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
+
+  const multiplier = unit === 'mi' ? 0.000621371192 : 0.001;
+
   if (!lat || !lng) {
     return next(
       new AppError(
@@ -126,7 +129,15 @@ exports.getDistances = catchAsync(async (req, res, next) => {
           type: 'Point',
           coordinates: [+lng, +lat]
         },
-        distanceField: 'distance'
+        distanceField: 'distance',
+        distanceMultiplier: multiplier // for converting distance field to km
+      }
+    },
+    {
+      // the field we want to keep
+      $project: {
+        distance: 1,
+        name: 1
       }
     }
   ]);
